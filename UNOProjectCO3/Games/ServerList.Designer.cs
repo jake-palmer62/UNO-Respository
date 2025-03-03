@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Servers));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.Refresh_Button = new System.Windows.Forms.Button();
@@ -35,14 +36,14 @@
             this.list_Servers = new System.Windows.Forms.ListBox();
             this.Create_Button = new System.Windows.Forms.Button();
             this.Join_Button = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(16, 25);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(12, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(163, 29);
             this.label1.TabIndex = 0;
@@ -52,8 +53,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(483, 25);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(362, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(176, 29);
             this.label2.TabIndex = 1;
@@ -62,10 +62,9 @@
             // Refresh_Button
             // 
             this.Refresh_Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refresh_Button.Location = new System.Drawing.Point(197, 459);
-            this.Refresh_Button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Refresh_Button.Location = new System.Drawing.Point(148, 373);
             this.Refresh_Button.Name = "Refresh_Button";
-            this.Refresh_Button.Size = new System.Drawing.Size(133, 46);
+            this.Refresh_Button.Size = new System.Drawing.Size(100, 37);
             this.Refresh_Button.TabIndex = 2;
             this.Refresh_Button.Text = "Refresh";
             this.Refresh_Button.UseVisualStyleBackColor = true;
@@ -73,30 +72,29 @@
             // 
             // text_PlayerName
             // 
-            this.text_PlayerName.Location = new System.Drawing.Point(23, 64);
-            this.text_PlayerName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.text_PlayerName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.text_PlayerName.Location = new System.Drawing.Point(17, 52);
             this.text_PlayerName.Name = "text_PlayerName";
-            this.text_PlayerName.Size = new System.Drawing.Size(420, 22);
+            this.text_PlayerName.Size = new System.Drawing.Size(316, 24);
             this.text_PlayerName.TabIndex = 3;
             this.text_PlayerName.TextChanged += new System.EventHandler(this.text_PlayerName_TextChanged);
             // 
             // list_Servers
             // 
+            this.list_Servers.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.list_Servers.FormattingEnabled = true;
-            this.list_Servers.ItemHeight = 16;
-            this.list_Servers.Location = new System.Drawing.Point(489, 64);
-            this.list_Servers.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.list_Servers.ItemHeight = 18;
+            this.list_Servers.Location = new System.Drawing.Point(367, 52);
             this.list_Servers.Name = "list_Servers";
-            this.list_Servers.Size = new System.Drawing.Size(505, 356);
+            this.list_Servers.Size = new System.Drawing.Size(380, 274);
             this.list_Servers.TabIndex = 4;
             // 
             // Create_Button
             // 
             this.Create_Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Create_Button.Location = new System.Drawing.Point(655, 459);
-            this.Create_Button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Create_Button.Location = new System.Drawing.Point(491, 373);
             this.Create_Button.Name = "Create_Button";
-            this.Create_Button.Size = new System.Drawing.Size(157, 46);
+            this.Create_Button.Size = new System.Drawing.Size(118, 37);
             this.Create_Button.TabIndex = 5;
             this.Create_Button.Text = "Create Game";
             this.Create_Button.UseVisualStyleBackColor = true;
@@ -106,20 +104,32 @@
             // 
             this.Join_Button.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.Join_Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Join_Button.Location = new System.Drawing.Point(397, 459);
-            this.Join_Button.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Join_Button.Location = new System.Drawing.Point(298, 373);
+            this.Join_Button.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Join_Button.Name = "Join_Button";
-            this.Join_Button.Size = new System.Drawing.Size(201, 46);
+            this.Join_Button.Size = new System.Drawing.Size(151, 37);
             this.Join_Button.TabIndex = 7;
             this.Join_Button.Text = "Join Game";
             this.Join_Button.UseVisualStyleBackColor = true;
             this.Join_Button.Click += new System.EventHandler(this.Join_Button_Click);
             // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(671, 407);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(117, 31);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "How to Play";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Servers
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.Join_Button);
             this.Controls.Add(this.Create_Button);
             this.Controls.Add(this.list_Servers);
@@ -127,7 +137,7 @@
             this.Controls.Add(this.Refresh_Button);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Servers";
             this.Text = "Servers";
             this.Load += new System.EventHandler(this.Servers_Load);
@@ -145,5 +155,6 @@
         private System.Windows.Forms.ListBox list_Servers;
         private System.Windows.Forms.Button Create_Button;
         private System.Windows.Forms.Button Join_Button;
+        private System.Windows.Forms.Button button1;
     }
 }

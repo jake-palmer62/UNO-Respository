@@ -10,9 +10,9 @@ namespace UNOProjectCO3
 {
     public abstract class gameConnection : HostBackEnd
     {
-        public IPEndPoint HostAddress { get; private set; }
+        public IPEndPoint HostIPEndPointAddress { get; private set; }
         public long HostId { get; private set; }
-        readonly long ConnectId = IDGenerator.GenerateID();
+        readonly long ConnectionId = IDGenerator.GenerateID();
         public long PlayerId { get; private set; }
         public string PlayerName;
         bool connected;
@@ -32,14 +32,15 @@ namespace UNOProjectCO3
             }
             set
             {
-                SetPlayerReady(value);
+                SetPlayerReadyState(value);
             }
         }
         public bool IsGameStartable { get; private set; }
 
+        #region Game hosting events
         public delegate void NoArgDelegate();
         public event NoArgDelegate Connected;
-        public delegate void DisconnectedHandler(ClientMessages msg, string reason);
+        public delegate void DisconnectedHandler(MessagesforClient msg, string reason);
         public event DisconnectedHandler Disconnected;
         public delegate void ChatHandler(string Name, string message);
         public event ChatHandler ChatArrived;
@@ -49,13 +50,13 @@ namespace UNOProjectCO3
         public event Action<string> OtherPlayerLeft;
         public delegate void GeneralPlayerInfoHandler(string nick, bool isReady, object furtherInfo);
         public event GeneralPlayerInfoHandler GeneralPlayerInfoReceived;
-
+        #endregion
 
         public static gameConnection Create(IPAddress ip, long hostId, IGameHostCreation theGameHost)
         {
             var Connection = theGameHost.CreateConnection();
             Connection.HostId = hostId;
-            Connection.HostAddress = new IPEndPoint(ip, myPort);
+            Connection.HostIPEndPointAddress = new IPEndPoint(ip, myPort);
             return Connection;
         }
 
@@ -71,27 +72,27 @@ namespace UNOProjectCO3
             {
                 w.Write(HostId);
                 w.Write((byte)HostMessage.Connect);
-                w.Write(ConnectId);
+                w.Write(ConnectionId);
                 w.Write(Name);
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
 
-        protected virtual void gameConnected()
+        protected virtual void GameConnected()
         {
             connected = true;
             if (Connected != null)
                 Connected();
         }
 
-        protected virtual void gameDisconnected(ClientMessages msg, string reason)
+        protected virtual void GameDisconnected(MessagesforClient msg, string reason)
         {
             connected = false;
             if (Disconnected != null)
                 Disconnected(msg, reason);
         }
 
-        public void Disconnect()
+        public void DisconnectGame()
         {
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
@@ -99,7 +100,7 @@ namespace UNOProjectCO3
                 w.Write(HostId);
                 w.Write((byte)HostMessage.Disconnect);
                 w.Write(PlayerId);
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
 
@@ -111,64 +112,64 @@ namespace UNOProjectCO3
                 if (id != PlayerId)
                     return;
             }
-            else if (ConnectId != id)
+            else if (ConnectionId != id)
                 return;
-            var msg = (ClientMessages)r.ReadByte();
+            var msg = (MessagesforClient)r.ReadByte();
             string Name;
 
             switch (msg)
             {
-                case ClientMessages.JoinGranted:
+                case MessagesforClient.JoinAllowed:
 
                     PlayerId = r.ReadInt64();
                     PlayerName = r.ReadString();
 
-                    gameConnected();
+                    GameConnected();
                     break;
-                case ClientMessages.Kicked:
-                case ClientMessages.Disconnected:
-                case ClientMessages.Timeout:
-                case ClientMessages.JoinDenied:
-                    gameDisconnected(msg, r.ReadString());
+                case MessagesforClient.Kicked:
+                case MessagesforClient.Disconnected:
+                case MessagesforClient.Timeout:
+                case MessagesforClient.JoinDenied:
+                    GameDisconnected(msg, r.ReadString());
                     break;
-                case ClientMessages.ServerShutdown:
-                    gameDisconnected(msg, string.Empty);
+                case MessagesforClient.ServerShutdown:
+                    GameDisconnected(msg, string.Empty);
                     break;
-                case ClientMessages.OtherPlayerLeft:
+                case MessagesforClient.OtherPlayerLeft:
                     PlayerName = r.ReadString();
                     OnOtherPlayerLeft(PlayerName);
                     if (OtherPlayerLeft != null)
                         OtherPlayerLeft(PlayerName);
                     break;
-                case ClientMessages.IsReady:
+                case MessagesforClient.IsReady:
                     isPlayerReady = r.ReadBoolean();
                     if (ReadyStateChanged != null)
                         ReadyStateChanged(isPlayerReady);
                     break;
-                case ClientMessages.PlayerInfo:
-                    OnPlayerInfoReceived(r);
+                case MessagesforClient.PlayerInfo:
+                    OnGamePlayerInfoReceived(r);
                     break;
-                case ClientMessages.ChatMessage:
+                case MessagesforClient.ChatMessage:
                     Name = r.ReadString();
                     var chat = r.ReadString();
                     if (ChatArrived != null)
                         ChatArrived(Name, chat);
                     break;
-                case ClientMessages.GameStarted:
+                case MessagesforClient.GameStarted:
                     OnGameStarted();
                     if (GameStarted != null)
                         GameStarted();
                     break;
-                case ClientMessages.GameFinished:
+                case MessagesforClient.GameFinished:
                     var aborted = r.ReadBoolean();
                     OnGameFinished(aborted);
                     if (GameFinished != null)
                         GameFinished(aborted);
                     break;
-                case ClientMessages.GameData:
+                case MessagesforClient.GameData:
                     OnGameDataReceived(r);
                     break;
-                case ClientMessages.GeneralPlayersInfo:
+                case MessagesforClient.GeneralPlayersInfo:
                     var count = r.ReadByte();
                     while (count-- > 0)
                     {
@@ -179,7 +180,7 @@ namespace UNOProjectCO3
                     break;
             }
         }
-        protected virtual void OnPlayerInfoReceived(BinaryReader r) { }
+        protected virtual void OnGamePlayerInfoReceived(BinaryReader r) { }
         protected virtual void OnOtherPlayerLeft(string nick) { }
 
         public void AcquirePlayerInfo()
@@ -190,11 +191,11 @@ namespace UNOProjectCO3
                 w.Write(HostId);
                 w.Write((byte)HostMessage.GetPlayerInfo);
                 w.Write(PlayerId);
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
 
-        protected void FireGeneralPlayerInfoReceivedEvent(string Name, bool isReady, object furtherInfo = null)
+        protected void SendGeneralPlayerInfoReceivedEvent(string Name, bool isReady, object furtherInfo = null)
         {
             if (GeneralPlayerInfoReceived != null)
                 GeneralPlayerInfoReceived(Name, isReady, furtherInfo);
@@ -202,10 +203,10 @@ namespace UNOProjectCO3
 
         protected virtual void OnGeneralPlayerInfoReceived(string Name, bool isReady, BinaryReader r)
         {
-            FireGeneralPlayerInfoReceivedEvent(Name, isReady, null);
+            SendGeneralPlayerInfoReceivedEvent(Name, isReady, null);
         }
 
-        public void AcquireGeneralPlayerInfo()
+        public void GetGeneralPlayerInfo()
         {
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
@@ -213,11 +214,11 @@ namespace UNOProjectCO3
                 w.Write(HostId);
                 w.Write((byte)HostMessage.GetPlayersInfo);
                 w.Write(PlayerId);
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
 
-        void SetPlayerReady(bool ready)
+        void SetPlayerReadyState(bool ready)
         {
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
@@ -226,11 +227,11 @@ namespace UNOProjectCO3
                 w.Write((byte)HostMessage.SetReadyState);
                 w.Write(PlayerId);
                 w.Write(ready);
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
 
-        public void SendChat(string message)
+        public void SendChatMessage(string message)
         {
             if (!string.IsNullOrEmpty(message))
                 using (var ms = new MemoryStream())
@@ -240,7 +241,7 @@ namespace UNOProjectCO3
                     w.Write((byte)HostMessage.ChatMessage);
                     w.Write(PlayerId);
                     w.Write(message);
-                    Send(ms, HostAddress);
+                    Send(ms, HostIPEndPointAddress);
                 }
         }
 
@@ -263,7 +264,7 @@ namespace UNOProjectCO3
                 w.Write(PlayerId);
                 w.Write(data);
 
-                Send(ms, HostAddress);
+                Send(ms, HostIPEndPointAddress);
             }
         }
     }

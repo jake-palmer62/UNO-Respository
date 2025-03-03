@@ -2,8 +2,8 @@
 
 namespace UNOProjectCO3.Game_Connection_Algorithms
 {
-    public enum ClientMessages : byte
+    public enum MessagesforClient : byte
     {
-        JoinGranted = 1, JoinDenied, Kicked, Disconnected, ServerShutdown, Timeout, KeepAlive, OtherPlayerLeft, IsReady, ChatMessage, GameStarted, GameFinished, GameData, PlayerInfo, GeneralPlayersInfo,
+        JoinAllowed = 1, JoinDenied, Kicked, Disconnected, ServerShutdown, Timeout, KeepHostAlive, OtherPlayerLeft, IsReady, ChatMessage, GameStarted, GameFinished, GameData, PlayerInfo, GeneralPlayersInfo,
     }
 }

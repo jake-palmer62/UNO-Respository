@@ -144,6 +144,45 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
                 g.DrawImage(Image, new RectangleF(ImageCoordinates[i, 0], ImageCoordinates[i, 1], HandCardWidth, dblHeight));
             }
         }
+
+        private void hand_Panel_MouseClick (object sender, MouseEventArgs e)
+        {
+            int image = HitTestCard(e.Location);
+            if (image != -1)
+            {
+                var c = Connection.OwnHand[image];
+                var col = c.Color;
+
+                if (c.Color == Card.CardColor.Black)
+                {
+                    var chooser = new ColorChooser();
+                    chooser.ShowDialog(this);
+                    col = chooser.SelectedColor;
+                }
+                Connection.PutCardOnStack(c, col);
+            }
+        }
+
+        int HitTestCard(Point loc)
+        {
+            var x = loc.X;
+            var y = loc.Y;
+
+            int image = -1;
+            for (int i = 0; i < Connection.OwnHand.Count; i++)
+            {
+                var img = Connection.OwnHand[i].GetImage();
+                var dblFac = HandCardWidth / (float)img.Width;
+                var dblHeight = dblFac * img.Height;
+                float test2 = ImageCoordinates[i, 0] + HandCardWidth;     
+                if (x >= ImageCoordinates[i, 0] && x <= ImageCoordinates[i, 0] + HandCardWidth && y >= ImageCoordinates[i, 1] && y <= ImageCoordinates[i, 1] + dblHeight)
+                {
+                    image = i;                    
+                }
+            }
+            return image;
+        }
+
         #endregion
 
 
@@ -159,7 +198,7 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
 
         private void LeaveGame_Button_Click(object sender, EventArgs e)
         {
-            Connection.Disconnect();
+            Connection.DisconnectGame();
         }
 
         private void DeclareUNO_Button_Click(object sender, EventArgs e)

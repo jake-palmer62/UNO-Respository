@@ -35,6 +35,9 @@
   <PropertyGroup>
     <StartupObject>UNOProjectCO3.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>UNOIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,6 +54,12 @@
   <ItemGroup>
     <Compile Include="Games\GameHostEntry.cs" />
     <Compile Include="Games\GameState.cs" />
+    <Compile Include="Games\HowToPlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Games\HowToPlay.Designer.cs">
+      <DependentUpon>HowToPlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Games\IDGenerator.cs" />
     <Compile Include="Games\ServerList.cs">
       <SubType>Form</SubType>
@@ -67,6 +76,12 @@
     </Compile>
     <Compile Include="Game_Connection_Algorithms\GameLobby.Designer.cs">
       <DependentUpon>GameLobby.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UNO\ColorChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UNO\ColorChooser.Designer.cs">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
     </Compile>
     <Compile Include="UNO\gameScreen.cs">
       <SubType>Form</SubType>
@@ -89,11 +104,17 @@
     <Compile Include="UNO\UNOHostCreator.cs" />
     <Compile Include="UNO\UNOMessage.cs" />
     <Compile Include="UNO\UNOPlayer.cs" />
+    <EmbeddedResource Include="Games\HowToPlay.resx">
+      <DependentUpon>HowToPlay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Games\ServerList.resx">
       <DependentUpon>ServerList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Game_Connection_Algorithms\GameLobby.resx">
       <DependentUpon>GameLobby.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UNO\ColorChooser.resx">
+      <DependentUpon>ColorChooser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UNO\gameScreen.resx">
       <DependentUpon>gameScreen.cs</DependentUpon>
@@ -123,5 +144,63 @@
   <ItemGroup>
     <Compile Include="Games\ServerListBackend.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cards\Blue_Cards\Blue_EIGHT.png" />
+    <Content Include="Cards\Blue_Cards\Blue_FIVE.png" />
+    <Content Include="Cards\Blue_Cards\Blue_FOUR.png" />
+    <Content Include="Cards\Blue_Cards\Blue_NINE.png" />
+    <Content Include="Cards\Blue_Cards\Blue_ONE.png" />
+    <Content Include="Cards\Blue_Cards\Blue_SEVEN.png" />
+    <Content Include="Cards\Blue_Cards\Blue_SIX.png" />
+    <Content Include="Cards\Blue_Cards\Blue_THREE.png" />
+    <Content Include="Cards\Blue_Cards\Blue_TWO.png" />
+    <Content Include="Cards\Blue_Cards\Blue_ZERO.png" />
+    <Content Include="Cards\Green_Cards\Green_EIGHT.png" />
+    <Content Include="Cards\Green_Cards\Green_FIVE.png" />
+    <Content Include="Cards\Green_Cards\Green_FOUR.png" />
+    <Content Include="Cards\Green_Cards\Green_NINE.png" />
+    <Content Include="Cards\Green_Cards\Green_ONE.png" />
+    <Content Include="Cards\Green_Cards\Green_SEVEN.png" />
+    <Content Include="Cards\Green_Cards\Green_SIX.png" />
+    <Content Include="Cards\Green_Cards\Green_THREE.png" />
+    <Content Include="Cards\Green_Cards\Green_TWO.png" />
+    <Content Include="Cards\Green_Cards\Green_ZERO.png" />
+    <Content Include="Cards\Red_Cards\Red_EIGHT.png" />
+    <Content Include="Cards\Red_Cards\Red_FIVE.png" />
+    <Content Include="Cards\Red_Cards\Red_FOUR.png" />
+    <Content Include="Cards\Red_Cards\Red_NINE.png" />
+    <Content Include="Cards\Red_Cards\Red_ONE.png" />
+    <Content Include="Cards\Red_Cards\Red_SEVEN.png" />
+    <Content Include="Cards\Red_Cards\Red_SIX.png" />
+    <Content Include="Cards\Red_Cards\Red_THREE.png" />
+    <Content Include="Cards\Red_Cards\Red_TWO.png" />
+    <Content Include="Cards\Red_Cards\Red_ZERO.png" />
+    <Content Include="Cards\Special_Cards\Blue_Draw2.png" />
+    <Content Include="Cards\Special_Cards\Blue_REVERSE.png" />
+    <Content Include="Cards\Special_Cards\Blue_SKIP.png" />
+    <Content Include="Cards\Special_Cards\Green_Draw2.png" />
+    <Content Include="Cards\Special_Cards\Green_REVERSE.png" />
+    <Content Include="Cards\Special_Cards\Green_SKIP.png" />
+    <Content Include="Cards\Special_Cards\Pick4_WILD.png" />
+    <Content Include="Cards\Special_Cards\Red_Draw2.png" />
+    <Content Include="Cards\Special_Cards\Red_REVERSE.png" />
+    <Content Include="Cards\Special_Cards\Red_SKIP.png" />
+    <Content Include="Cards\Special_Cards\WILD.png" />
+    <Content Include="Cards\Special_Cards\Yellow_Draw2.png" />
+    <Content Include="Cards\Special_Cards\Yellow_REVERSE.png" />
+    <Content Include="Cards\Special_Cards\Yellow_SKIP.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_EIGHT.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_FIVE.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_FOUR.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_NINE.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_ONE.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_SEVEN.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_SIX.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_THREE.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_TWO.png" />
+    <Content Include="Cards\Yellow_Cards\Yellow_ZERO.png" />
+    <Content Include="UNOIcon.ico" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

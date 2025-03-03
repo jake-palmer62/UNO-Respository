@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UNOProjectCO3.Games;
 using UNOProjectCO3.Game_Connection_Algorithms;
 
 namespace UNOProjectCO3.UNO

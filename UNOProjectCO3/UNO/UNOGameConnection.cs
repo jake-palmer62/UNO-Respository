@@ -77,10 +77,10 @@ namespace UNOProjectCO3.UNO
             base.OnOtherPlayerLeft(name);
         }
 
-        protected override void gameDisconnected(ClientMessages msg, string reason) // Displayes a reason why the game was disconected and closes the solution
+        protected override void GameDisconnected(MessagesforClient msg, string reason) // Displayes a reason why the game was disconected and closes the solution
         {
             Program.MainForm.BeginInvoke(new MethodInvoker(CloseGUI));
-            base.gameDisconnected(msg, reason);
+            base.GameDisconnected(msg, reason);
         }
 
         protected override void OnGeneralPlayerInfoReceived(string Name, bool isReady, BinaryReader r)
@@ -90,7 +90,7 @@ namespace UNOProjectCO3.UNO
             NotifyPropChanged(UNOProperty.OtherPlayerHand);
         }
 
-        protected override void OnPlayerInfoReceived(BinaryReader r) // Clears and reshuffles card lsits, notifys that cards are being dealt.
+        protected override void OnGamePlayerInfoReceived(BinaryReader r) // Clears and reshuffles card lsits, notifys that cards are being dealt.
         {
             OwnHand.Clear();
             ReccomendedCards.Clear();
@@ -101,7 +101,7 @@ namespace UNOProjectCO3.UNO
                 ReccomendedCards.Add(Card.FromHash(r.ReadUInt16()));
             }
             NotifyPropChanged(UNOProperty.OwnHand);
-            base.OnPlayerInfoReceived(r);
+            base.OnGamePlayerInfoReceived(r);
         }
 
         protected override void OnGameDataReceived(BinaryReader r) // Specifies what message is to be sent to the player, based on game rules.

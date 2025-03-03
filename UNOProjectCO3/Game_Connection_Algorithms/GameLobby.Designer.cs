@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameLobby));
             this.label1 = new System.Windows.Forms.Label();
             this.chat_TextBox = new System.Windows.Forms.TextBox();
             this.text_ChatMessage = new System.Windows.Forms.TextBox();
@@ -47,7 +48,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(17, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(179, 25);
             this.label1.TabIndex = 2;
@@ -55,17 +56,18 @@
             // 
             // chat_TextBox
             // 
-            this.chat_TextBox.Location = new System.Drawing.Point(425, 48);
+            this.chat_TextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chat_TextBox.Location = new System.Drawing.Point(420, 38);
             this.chat_TextBox.Multiline = true;
             this.chat_TextBox.Name = "chat_TextBox";
-            this.chat_TextBox.Size = new System.Drawing.Size(429, 552);
+            this.chat_TextBox.Size = new System.Drawing.Size(429, 562);
             this.chat_TextBox.TabIndex = 3;
             this.chat_TextBox.TextChanged += new System.EventHandler(this.chat_TextBox_TextChanged);
             // 
             // text_ChatMessage
             // 
             this.text_ChatMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.text_ChatMessage.Location = new System.Drawing.Point(425, 606);
+            this.text_ChatMessage.Location = new System.Drawing.Point(421, 606);
             this.text_ChatMessage.Name = "text_ChatMessage";
             this.text_ChatMessage.Size = new System.Drawing.Size(310, 29);
             this.text_ChatMessage.TabIndex = 4;
@@ -74,7 +76,7 @@
             // Say_Button
             // 
             this.Say_Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Say_Button.Location = new System.Drawing.Point(742, 606);
+            this.Say_Button.Location = new System.Drawing.Point(737, 606);
             this.Say_Button.Name = "Say_Button";
             this.Say_Button.Size = new System.Drawing.Size(112, 45);
             this.Say_Button.TabIndex = 5;
@@ -86,7 +88,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(420, 9);
+            this.label2.Location = new System.Drawing.Point(422, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(110, 25);
             this.label2.TabIndex = 6;
@@ -94,10 +96,12 @@
             // 
             // playerList
             // 
+            this.playerList.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.playerList.FormattingEnabled = true;
+            this.playerList.ItemHeight = 18;
             this.playerList.Location = new System.Drawing.Point(14, 38);
             this.playerList.Name = "playerList";
-            this.playerList.Size = new System.Drawing.Size(386, 576);
+            this.playerList.Size = new System.Drawing.Size(386, 562);
             this.playerList.TabIndex = 8;
             this.playerList.SelectedIndexChanged += new System.EventHandler(this.playerList_SelectedIndexChanged);
             // 
@@ -113,13 +117,14 @@
             this.button_Ready.Text = "Ready";
             this.button_Ready.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.button_Ready.CheckedChanged += new System.EventHandler(this.button_Ready_CheckedChanged);
+            this.button_Ready.Click += new System.EventHandler(this.ready_Button_Click);
             // 
             // Return_to_Lobby
             // 
             this.Return_to_Lobby.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Return_to_Lobby.AutoSize = true;
             this.Return_to_Lobby.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Return_to_Lobby.Location = new System.Drawing.Point(862, 526);
+            this.Return_to_Lobby.Location = new System.Drawing.Point(862, 527);
             this.Return_to_Lobby.Name = "Return_to_Lobby";
             this.Return_to_Lobby.Size = new System.Drawing.Size(340, 65);
             this.Return_to_Lobby.TabIndex = 10;
@@ -142,12 +147,12 @@
             // 
             this.Admin_Label.AutoSize = true;
             this.Admin_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Admin_Label.Location = new System.Drawing.Point(68, 2);
+            this.Admin_Label.Location = new System.Drawing.Point(46, 3);
             this.Admin_Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Admin_Label.Name = "Admin_Label";
-            this.Admin_Label.Size = new System.Drawing.Size(59, 20);
+            this.Admin_Label.Size = new System.Drawing.Size(109, 20);
             this.Admin_Label.TabIndex = 9;
-            this.Admin_Label.Text = "Admin";
+            this.Admin_Label.Text = "Admin Panel";
             // 
             // button_KickPlayers
             // 
@@ -185,6 +190,7 @@
             this.Controls.Add(this.text_ChatMessage);
             this.Controls.Add(this.chat_TextBox);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameLobby";
             this.Text = "GameLobby";
             this.Load += new System.EventHandler(this.GameLobby_Load);

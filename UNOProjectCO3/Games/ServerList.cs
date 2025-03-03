@@ -28,7 +28,7 @@ namespace UNOProjectCO3.Games
         {
             get
             {
-                return CanCreateAGame && list_Servers.SelectedIndex >= 0;
+                return true;
             }
         }
 
@@ -108,7 +108,7 @@ namespace UNOProjectCO3.Games
 
             if (gho == null)
             {
-                if (list_Servers.Items.Count > 1)
+                if (list_Servers.Items.Count < 1)
                     MessageBox.Show("No games available", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 else                   
                     MessageBox.Show("Select the game you would like to join", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -133,7 +133,7 @@ namespace UNOProjectCO3.Games
 
         private void Create_Button_Click(object sender, EventArgs e)
         {
-            if (GameHost.IsHosting)
+            if (GameHost.IsCurrentlyHosting)
             {
                 MessageBox.Show("Can't host more than one game!");
                 return;
@@ -156,6 +156,12 @@ namespace UNOProjectCO3.Games
         private void text_PlayerName_TextChanged_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            HowToPlay howToPlay = new HowToPlay();
+            howToPlay.Show();            
         }
     }
 }

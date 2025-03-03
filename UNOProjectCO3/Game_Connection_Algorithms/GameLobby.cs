@@ -21,19 +21,19 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
 
         gameConnection Connection;
         public readonly ManualResetEvent ConnectedEvent = new ManualResetEvent(false);
-        static bool IsAdmin { get { return GameHost.IsHosting; } }
+        static bool IsAdmin { get { return GameHost.IsCurrentlyHosting; } }
         bool GameClosed;
 
         public static GameLobby CreateGame(string thePlayerName, IGameHostCreation theGameHost)
         {
-            if (GameHost.IsHosting)
+            if (GameHost.IsCurrentlyHosting)
             {
                 throw new InvalidOperationException("Cannot create another game while already hosting one!");
             }
             var host = GameHost.HostGame(theGameHost);
             var lobby = TryToJoin(IPAddress.None, host.ID, thePlayerName, theGameHost);
 
-            if (!GameHost.IsHosting)
+            if (!GameHost.IsCurrentlyHosting)
             {
                 return null;
             }
@@ -95,10 +95,10 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
         {
             ConnectedEvent.Set();
             Program.MainForm.BeginInvoke(new MethodInvoker(Show));
-            Connection.AcquireGeneralPlayerInfo();
+            Connection.GetGeneralPlayerInfo();
         }
 
-        void Disconnected(ClientMessages reason, string message)
+        void Disconnected(MessagesforClient reason, string message)
         {
             ConnectedEvent.Reset();
             Connection.Dispose();
@@ -113,16 +113,16 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
                 default:
                     title = "Disconnected";
                     break;
-                case ClientMessages.JoinDenied:
+                case MessagesforClient.JoinDenied:
                     title = "Join denied";
                     break;
-                case ClientMessages.Kicked:
+                case MessagesforClient.Kicked:
                     title = "Kicked";
                     break;
-                case ClientMessages.Timeout:
+                case MessagesforClient.Timeout:
                     title = "Timeout";
                     break;
-                case ClientMessages.ServerShutdown:
+                case MessagesforClient.ServerShutdown:
                     title = "Shutdown";
                     message = "Server was shut down";
                     break;
@@ -139,9 +139,15 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
             }
             else
             {
-                GameHost.theInstance.GameStartabilityChanged += ReadyStateChanged;
+                GameHost.theGameHostInstance.GameStartabilityChanged += GameReadyStateChanged;
             }
         }
+
+        void GameReadyStateChanged (bool ready)
+        {
+            BeginInvoke(new MethodInvoker(() => button_StartGame.Enabled = ready));
+        }
+
         void DrawPlayerItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
@@ -176,15 +182,15 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
             }
         }
 
-        void PlayerInfoReceived(string name, bool isReady, object furtherInfo)
+        void PlayerInfoReceived(string Name, bool isReady, object furtherInfo)
         {
             Program.MainForm.BeginInvoke(new MethodInvoker(() =>
             {
-                var pi = new PlayerInfo { name = name, isReady = isReady };
-                var i = playerList.Items.IndexOf(name);
+                var pi = new PlayerInfo { name = Name, isReady = isReady };
+                var i = playerList.Items.IndexOf(pi);
 
                 if (i < 0)
-                    playerList.Items.Add(name);
+                    playerList.Items.Add(pi);
                 else
                 {
                     playerList.Items.RemoveAt(i);
@@ -203,7 +209,7 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
             var t = text_ChatMessage.Text;
             if (string.IsNullOrEmpty(t))
                 return;
-            Connection.SendChat(t);
+            Connection.SendChatMessage(t);
             text_ChatMessage.Clear();
         }
 
@@ -215,11 +221,12 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
 
         private void ready_Button_Click(object sender, EventArgs e)
         {
+            Connection.IsPlayerReady = button_Ready.Checked;
         }
 
         private void Start_button_Click(object sender, EventArgs e)
         {
-            GameHost.theInstance.StartGame();
+            GameHost.theGameHostInstance.StartGame();
         }
 
         void text_ChatMessage_KeyDown(object sender, KeyEventArgs e)
@@ -235,7 +242,7 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
 
         private void Return_to_Lobby_Click(object sender, EventArgs e)
         {
-            Connection.Disconnect();
+            Connection.DisconnectGame();
             GameClosed = true;
             Close();
         }
@@ -247,19 +254,19 @@ namespace UNOProjectCO3.Game_Connection_Algorithms
 
         private void button_StartGame_Click(object sender, EventArgs e)
         {
-            GameHost.theInstance.StartGame();
+            GameHost.theGameHostInstance.StartGame();
         }
 
         private void button_KickPlayers_Click(object sender, EventArgs e)
         {
             foreach (PlayerInfo pi in playerList.SelectedItems)
             {
-                var p = GameHost.theInstance.GetPlayer(pi.name);
+                var p = GameHost.theGameHostInstance.GetPlayer(pi.name);
                 if (p == null)
                 {
                     continue;
                 }
-                GameHost.theInstance.DisconnectPlayer(p, ClientMessages.Kicked);
+                GameHost.theGameHostInstance.DisconnectPlayer(p, MessagesforClient.Kicked);
             }
         }
 

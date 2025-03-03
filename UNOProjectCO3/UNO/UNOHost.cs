@@ -74,7 +74,7 @@ namespace UNOProjectCO3
         #endregion
         #region Card logic
 
-        void StepToNextPlayer()
+        void SkipToNextPlayer()
         {
             PlayerDrewCard = false;
             var i = GetPlayerIndex(NextPlayer);
@@ -154,7 +154,7 @@ namespace UNOProjectCO3
                     using (var ms = new MemoryStream())
                     using (var w = new BinaryWriter(ms))
                     {
-                        w.Write((byte)ClientMessages.GameFinished);
+                        w.Write((byte)MessagesforClient.GameFinished);
                         w.Write(p.Name);
                     }
 
@@ -171,7 +171,7 @@ namespace UNOProjectCO3
             switch (c.Caption)
             {
                 case Card.CardCaption.Plus2:
-                    StepToNextPlayer();
+                    SkipToNextPlayer();
                     var next = NextPlayer;
                     next.PlaceCard(AvailableCards.GiveCard());
                     next.PlaceCard (AvailableCards.GiveCard());
@@ -181,12 +181,12 @@ namespace UNOProjectCO3
                     ClockwiseDirection = !ClockwiseDirection;
                     break;
                 case Card.CardCaption.SkipPlayer:
-                    StepToNextPlayer();
+                    SkipToNextPlayer();
                     break;
                 case Card.CardCaption.ChooseColour:
                     break;
                 case Card.CardCaption.Pick4:
-                    StepToNextPlayer();
+                    SkipToNextPlayer();
                     next = NextPlayer;
                     for (int i = 4; i > 0; i--)
                         next.PlaceCard(AvailableCards.GiveCard());
@@ -197,7 +197,7 @@ namespace UNOProjectCO3
             }
 
             if (State != GameState.StartGame)
-                StepToNextPlayer();
+                SkipToNextPlayer();
             InformNewPlayer();
             DistributeGeneralPlayerUpdate();
             DistributeSpecificPlayerUpdate(NextPlayer);
@@ -223,7 +223,7 @@ namespace UNOProjectCO3
             {
                 DistributeSpecificPlayerUpdate(p);
                 DistributeGeneralPlayerUpdate();
-                StepToNextPlayer();
+                SkipToNextPlayer();
                 InformNewPlayer();
             }
 
@@ -245,7 +245,7 @@ namespace UNOProjectCO3
             if (NextPlayer != p || !PlayerDrewCard)
                 return false;
 
-            StepToNextPlayer();
+            SkipToNextPlayer();
             return true;
         }
 
@@ -256,13 +256,13 @@ namespace UNOProjectCO3
             return new UNOPlayer(this, nick);
         }
 
-        protected override void OnPlayerDisconnected(Player p, ClientMessages reason)
+        protected override void OnPlayerDisconnected(Player p, MessagesforClient reason)
         {
             (p as UNOPlayer).ReleaseHand();
 
             if (NextPlayer == p)
             {
-                StepToNextPlayer();
+                SkipToNextPlayer();
                 InformNewPlayer();
             }
 
@@ -280,7 +280,7 @@ namespace UNOProjectCO3
                 p.ResetDeck();
             }
             CardStack.Clear();
-            StepToNextPlayer();
+            SkipToNextPlayer();
             var firstCard = AvailableCards.GiveCard();
             CurrentColor = firstCard.Color;
             if (CurrentColor == Card.CardColor.Black)
@@ -366,7 +366,7 @@ namespace UNOProjectCO3
 
             if (errorMsg != null)
             {
-                w.Write((byte)ClientMessages.GameData);
+                w.Write((byte)MessagesforClient.GameData);
                 w.Write((byte)UNOMessage.ActionNotAllowed);
                 w.Write(errorMsg);
             }

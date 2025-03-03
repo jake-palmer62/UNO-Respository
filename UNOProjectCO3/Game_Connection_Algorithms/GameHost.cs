@@ -10,9 +10,11 @@ namespace UNOProjectCO3
 {
     public class GameStateChangedArgs : EventArgs
     {
+        #region Variables
         public readonly GameHost Host;
         public readonly GameState OldState;
         public readonly GameState NewState;
+        #endregion
 
         public GameStateChangedArgs(GameHost H, GameState oldState, GameState newState) // Uses events to display current game states.
         {
@@ -25,9 +27,9 @@ namespace UNOProjectCO3
     public abstract class GameHost : HostBackEnd
     {
         
-        #region Properties
-        public static GameHost theInstance { get; private set; }
-        public static bool IsHosting { get { return theInstance != null; } }
+        #region Game Properties
+        public static GameHost theGameHostInstance { get; private set; }
+        public static bool IsCurrentlyHosting { get { return theGameHostInstance != null; } }
         public abstract string GameTitle { get; }
         public readonly long ID = IDGenerator.GenerateID();
         public virtual byte MinPlayers { get { return 2; } set { } }
@@ -90,9 +92,10 @@ namespace UNOProjectCO3
                     AnyGameStateChanged(this, args);
             }
         }
-
+        #region Events
         public static EventHandler<GameStateChangedArgs> AnyGameStateChanged;
         public event EventHandler<GameStateChangedArgs> GameStateChanged;
+        #endregion
 
         public virtual bool ReadyToPlay // Used in the ready button in the GameLobby to specify whether players are ready to play or not.
         {
@@ -117,10 +120,10 @@ namespace UNOProjectCO3
 
         public static GameHost HostGame(IGameHostCreation Creator) // Creates the game host and ensures that only one instance of the game can be ran
         {
-            if (IsHosting)
+            if (IsCurrentlyHosting)
                 throw new InvalidOperationException("Shut down other host first!");
             var host = Creator.Create();
-            theInstance = host;
+            theGameHostInstance = host;
             host.State = GameState.Starting;
             host.State = GameState.WaitingForPlayers;
             return host;
@@ -130,17 +133,17 @@ namespace UNOProjectCO3
         #region Exitgame
         public static bool ShutDown()
         {
-            if (theInstance == null)
+            if (theGameHostInstance == null)
                 return false;
-            theInstance.Shutdown();
-            theInstance = null;
+            theGameHostInstance.Shutdown();
+            theGameHostInstance = null;
             return true;
         }
 
         public virtual void Shutdown()
         {
             State = GameState.ShuttingDown;
-            SendToAllPlayers(new[] { (byte)ClientMessages.ServerShutdown });
+            SendToAllPlayers(new[] { (byte)MessagesforClient.ServerShutdown });
             Dispose();
         }
         #endregion
@@ -165,7 +168,7 @@ namespace UNOProjectCO3
 
                     if (State != Games.GameState.WaitingForPlayers)
                     {
-                        w.Write((byte)ClientMessages.JoinDenied);
+                        w.Write((byte)MessagesforClient.JoinDenied);
                         w.Write("Server is not awaiting new players!");
                     }
                     else if (players.Count < MaxPlayers)
@@ -173,7 +176,7 @@ namespace UNOProjectCO3
                         player = CreatePlayer(GetValidPlayerName(requestedName));
 
                         player.Address = ep;
-                        w.Write((byte)ClientMessages.JoinGranted);
+                        w.Write((byte)MessagesforClient.JoinAllowed);
                         w.Write(player.ID);
                         w.Write(player.Name);
 
@@ -182,7 +185,7 @@ namespace UNOProjectCO3
                     }
                     else
                     {
-                        w.Write((byte)ClientMessages.JoinDenied);
+                        w.Write((byte)MessagesforClient.JoinDenied);
                         w.Write("Player limit reached!");
                     }
                     break;
@@ -191,7 +194,7 @@ namespace UNOProjectCO3
                     player = GetPlayer(playerId);
 
                     if (player != null)
-                        DisconnectPlayer(w, player, ClientMessages.Disconnected, "Disconnected by user", ep);
+                        DisconnectPlayer(w, player, MessagesforClient.Disconnected, "Disconnected by user", ep);
                     break;
 
                 case HostMessage.GetReadyState:
@@ -200,7 +203,7 @@ namespace UNOProjectCO3
                     if (player != null)
                     {
                         w.Write(playerId);
-                        w.Write((byte)ClientMessages.IsReady);
+                        w.Write((byte)MessagesforClient.IsReady);
                         w.Write(player.ReadyToPlay);
                     }
                     break;
@@ -233,7 +236,7 @@ namespace UNOProjectCO3
                         using (var ms2 = new MemoryStream())
                         using (var w2 = new BinaryWriter(ms2))
                         {
-                            w2.Write((byte)ClientMessages.ChatMessage);
+                            w2.Write((byte)MessagesforClient.ChatMessage);
                             w2.Write(player.Name);
                             w2.Write(chat);
                             SendToAllPlayers(ms2.ToArray());
@@ -285,14 +288,14 @@ namespace UNOProjectCO3
             DistributeGeneralPlayerUpdate(player);
             CheckGameStartable();
         }
-        protected virtual void OnPlayerDisconnecting(Player p, ClientMessages reason) { }
+        protected virtual void OnPlayerDisconnecting(Player p, MessagesforClient reason) { }
 
-        protected virtual void OnPlayerDisconnected(Player p, ClientMessages reason)
+        protected virtual void OnPlayerDisconnected(Player p, MessagesforClient reason)
         {
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
             {
-                w.Write((byte)ClientMessages.OtherPlayerLeft);
+                w.Write((byte)MessagesforClient.OtherPlayerLeft);
                 w.Write(p.Name);
 
                 SendToAllPlayers(ms.ToArray());
@@ -302,7 +305,7 @@ namespace UNOProjectCO3
         protected virtual void OnComposePlayerInfo(Player p, BinaryWriter w) { }
         protected virtual void OnComposeGeneralPlayerInfo(Player p, BinaryWriter w) { }
 
-        public void DisconnectPlayer(Player player, ClientMessages reason = ClientMessages.Disconnected, string message = null)
+        public void DisconnectPlayer(Player player, MessagesforClient reason = MessagesforClient.Disconnected, string message = null)
         {
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
@@ -312,7 +315,7 @@ namespace UNOProjectCO3
             }
         }
 
-        public void DisconnectPlayer(BinaryWriter w, Player player, ClientMessages reason = ClientMessages.Disconnected, string message = null, IPEndPoint ep = null)
+        public void DisconnectPlayer(BinaryWriter w, Player player, MessagesforClient reason = MessagesforClient.Disconnected, string message = null, IPEndPoint ep = null)
         {
             OnPlayerDisconnecting(player, reason);
             lock (players)
@@ -365,7 +368,7 @@ namespace UNOProjectCO3
             using (var ms = new MemoryStream())
             using (var w = new BinaryWriter(ms))
             {
-                w.Write((byte)ClientMessages.GeneralPlayersInfo);
+                w.Write((byte)MessagesforClient.GeneralPlayersInfo);
                 w.Write((byte)1);
 
                 w.Write(p.Name);
@@ -387,7 +390,7 @@ namespace UNOProjectCO3
 
         protected void ComposeGeneralPlayerInfoBytes(BinaryWriter w)
         {
-            w.Write((byte)ClientMessages.GeneralPlayersInfo);
+            w.Write((byte)MessagesforClient.GeneralPlayersInfo);
 
             lock (players)
             {
@@ -403,7 +406,7 @@ namespace UNOProjectCO3
 
         void ComposeSpecificPlayerInfoBytes(Player p, BinaryWriter w)
         {
-            w.Write((byte)ClientMessages.PlayerInfo);
+            w.Write((byte)MessagesforClient.PlayerInfo);
             OnComposePlayerInfo(p, w);
         }
 
@@ -450,7 +453,7 @@ namespace UNOProjectCO3
             var actData = new byte[data.Length + sizeof(long) + 1];
 
             BitConverter.GetBytes(p.ID).CopyTo(actData, 0);
-            actData[sizeof(long)] = (byte)ClientMessages.GameData;
+            actData[sizeof(long)] = (byte)MessagesforClient.GameData;
             data.CopyTo(actData, sizeof(long) + 1);
 
             Send(actData, p.Address);
@@ -484,7 +487,7 @@ namespace UNOProjectCO3
         {
             var actData = new byte[data.Length + sizeof(long) + 1];
 
-            actData[sizeof(long)] = (byte)ClientMessages.GameData;
+            actData[sizeof(long)] = (byte)MessagesforClient.GameData;
             data.CopyTo(actData, sizeof(long) + 1);
 
             lock (players)
@@ -516,7 +519,7 @@ namespace UNOProjectCO3
 
             State = Games.GameState.Playing;
 
-            SendToAllPlayers(new[] { (byte)ClientMessages.GameStarted });
+            SendToAllPlayers(new[] { (byte)MessagesforClient.GameStarted });
 
             return true;
         }
@@ -526,7 +529,7 @@ namespace UNOProjectCO3
         protected virtual void NoticeGameFinished(bool aborted = false)
         {
             State = Games.GameState.GameFinished;
-            SendToAllPlayers(new[] { (byte)ClientMessages.GameFinished, (byte)(aborted ? 1 : 0) });
+            SendToAllPlayers(new[] { (byte)MessagesforClient.GameFinished, (byte)(aborted ? 1 : 0) });
             State = Games.GameState.WaitingForPlayers;
         }
         #endregion

@@ -55,8 +55,8 @@ namespace UNOProjectCO3.Games
 
         public void SendHostUpdate()
         {
-            if (GameHost.IsHosting)
-                SendHostUpdate(GameHost.theInstance);
+            if (GameHost.IsCurrentlyHosting)
+                SendHostUpdate(GameHost.theGameHostInstance);
         }
 
         public void SendHostUpdate(GameHost host)
